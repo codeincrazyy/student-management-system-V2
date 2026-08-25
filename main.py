@@ -1,15 +1,11 @@
-from student import Student
 from student_manager import StudentManager
+from menu import main_menu
 
-Student1 = Student("s001", "abigail", 22, "abigail@email.com")
 
-Student2 = Student("s002", "able", 20, "able@email.com")
+def main():
+    manager = StudentManager()
+    main_menu(manager)
+    
 
-manager = StudentManager()
-
-manager.add_student(Student1)
-manager.add_student(Student2)
-
-manager.view_student()
-
-manager.update_student()
+if __name__ == "__main__":
+    main()
