@@ -27,7 +27,6 @@ class StudentManager:
         try:
             with self.connection:
                 self.connection.execute(query)
-            print("table was created")
         except Exception as e:
             print(e)
         
@@ -64,22 +63,90 @@ class StudentManager:
             print(e)
             return[]
 
-    def delete_student(self, user_id):
-        query = "DELETE FROM users WHERE id =?"
+    def delete_student(self, student_id):
+        select_query = "SELECT name FROM users WHERE id =?"
+        delete_query = "DELETE FROM users WHERE id =? "
+        
         
         try:
             with self.connection:
-                self.connection.execute(query,(user_id,))
-                print(f"user has been deleted")
+                
+                cursor = self.connection.execute(select_query,(student_id,))
+                
+                student = cursor.fetchone()
+                
+                
+                if student:
+                    student_name = student[0]
+                    
+                    self.connection.execute(delete_query,(student_id,))
+                    print(f"student {student_name} has been removed")
+                else:
+                    print(f"no student with id:{student_id} has been found")
+                    
         except Exception as e:
             print(e)
 
-    def update_student(self, user_id, email):
-        query = "UPDATE users SET email = ? WHERE id = ?"
+    def update_student(self, student_id: int, name: str = None, age: int = None, email: str = None):
+        
+        fields = []
+        params = []
+        
+        if email is not None:
+
+            check_query = "SELECT * FROM users WHERE email = ? AND id != ?"
+            cursor = self.connection.execute(check_query, (email, student_id))
+            existing_student = cursor.fetchone()
+
+            if existing_student:
+
+                print(f"A student with email '{email}' already exists.")
+                return
+        
+        if name is not None:
+            fields.append("name = ?")
+            params.append(name)
+            
+        if age is not None:
+            fields.append("age = ?")
+            params.append(age)
+        
+        if email is not None:
+            fields.append("email = ?")
+            params.append(email)
+            
+        if not fields:
+            print("no updates been made.")
+            return
+        
+        set_clause = ", ".join(fields)
+        query = f"UPDATE users SET {set_clause} WHERE id = ?"
+        params.append(student_id)
         
         try:
             with self.connection:
-                self.connection.execute(query,(email,user_id))
-                print("user info been updated")
+                cursor = self.connection.execute(query,tuple(params))
+                
+            if cursor.rowcount > 0:
+                print("student info has been updated")
+                
+            else:
+                print(f"no student found with ID:{student_id}")
+            
+        except sqlite3.IntegrityError:
+                    print(f"a student with email '{email}' already exists.")
+                    return False
+            
+    def find_student(self, student_id):
+        query = "SELECT * FROM users WHERE id = ?"
+        
+        
+        try:
+            with self.connection:
+                cursor = self.connection.execute(query, (student_id,))
+                student = cursor.fetchone()
+                
+                if student:
+                    return student
         except Exception as e:
             print(e)
