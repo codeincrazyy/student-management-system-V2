@@ -51,17 +51,27 @@ class StudentManager:
         
         
 
+    def create_from_db(self,table_row):
+            
+            new_instance = Student(table_row[0],table_row[1],table_row[2],table_row[3])
+            
+            
+            return new_instance
+
 #used to display data from a table
     def view_students(self):
         query = "SELECT * FROM users"
 
         try:
-                with self.connection:
-                    rows = self.connection.execute(query).fetchall()
-                return rows
+            with self.connection:
+                table_row = self.connection.execute(query).fetchall()
+                        
+            return [self.create_from_db(row) for row in table_row]
+                    
         except Exception as e:
-            print(e)
-            return[]
+                    print(e)
+                    return[]
+                
 
     def delete_student(self, student_id):
         select_query = "SELECT name FROM users WHERE id =?"
@@ -95,7 +105,9 @@ class StudentManager:
         if email is not None:
 
             check_query = "SELECT * FROM users WHERE email = ? AND id != ?"
+            
             cursor = self.connection.execute(check_query, (email, student_id))
+            
             existing_student = cursor.fetchone()
 
             if existing_student:
@@ -144,9 +156,13 @@ class StudentManager:
         try:
             with self.connection:
                 cursor = self.connection.execute(query, (student_id,))
-                student = cursor.fetchone()
                 
-                if student:
-                    return student
+                table_row = cursor.fetchone()
+                
+                if table_row:
+                    return self.create_from_db(table_row)
         except Exception as e:
             print(e)
+            
+        
+        

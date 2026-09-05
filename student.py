@@ -6,5 +6,5 @@ class Student:
         self.email = email
         
         
-    
-    
+    def __str__(self):
+        return f"student(id: {self.id}, name: {self.name}, age: {self.age}, email: {self.email})"

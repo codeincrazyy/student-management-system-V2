@@ -5,7 +5,7 @@ import re
 
 def main_menu(manager):
     
-    def input_cheacker(prompt: str, min_val: int = None, max_val:int = None) -> int:
+    def input_checker(prompt: str, min_val: int = None, max_val:int = None) -> int:
         while True:
             try:
                 
@@ -63,7 +63,7 @@ def main_menu(manager):
         match start:
                 case '1':
                     name = validate_name("enter name: ", min_length=2)
-                    age = input_cheacker("enter age: ", min_val=4, max_val=24)
+                    age = input_checker("enter age: ", min_val=4, max_val=24)
                     email = validate_email("enter email: ")
                     
                     student = Student(None,name,age,email)
@@ -76,22 +76,22 @@ def main_menu(manager):
                         print(student)
                 
                 case '3': 
-                            id = input_cheacker("enter id of the student you want to remove: ",min_val=1 )
+                            id = input_checker("enter id of the student you want to remove: ",min_val=1 )
                             manager.delete_student(id)
                             
                     
                 
                 case '2':
-                    id = input_cheacker("enter id of user you want to update: ",min_val=1 )
+                    id = input_checker("enter id of user you want to update: ",min_val=1 )
                     
-                    name = validate_name("enter the new name: ")
-                    age = input_cheacker("enter the new age: ",min_val=4,max_val=24)
+                    name = validate_name("enter the new name: ",min_length=2)
+                    age = input_checker("enter the new age: ",min_val=4,max_val=24)
                     email = validate_email("enter the new email: ")
                     
                     manager.update_student(id,name,age,email)
                     
                 case '5':
-                    id = input_cheacker("enter id of the student: ",min_val=1)
+                    id = input_checker("enter id of the student: ",min_val=1)
                     
                     student = manager.find_student(id)
                     if student:
